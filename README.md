@@ -4,6 +4,7 @@ system) through the use of a PostgreSQL database.
 
 ## Summary
 This program includes the following:
+
 1. A database schema for storing data required to generate paired matches in a tournament using the Swiss System.
 2. A python module for connecting to database, register/delete/count players, report/delete matches, rank players and create a new Swiss parings.
 3. A testing code is also provided for debuging the program and for testing the database.
@@ -40,19 +41,19 @@ This program includes the following:
 
 ## API Usages
 
-### def connect():
+#### def connect():
 Connect to the PostgreSQL database.  Returns a database connection.
 
-### deleteMatches():
+#### deleteMatches():
 Remove all the match records from the database.
 
-### def deletePlayers():
+#### def deletePlayers():
 Remove all the player records from the database.
 
-### def countPlayers():
+#### def countPlayers():
 Returns the number of players currently registered.
 
-### def registerPlayer(name):
+#### def registerPlayer(name):
 Adds a player to the tournament database.
 
 The database assigns a unique serial id number for the player.  (This
@@ -61,7 +62,7 @@ should be handled by your SQL database schema, not in your Python code.)
 Args:
   name: the player's full name (need not be unique).
 
-### def playerStandings():
+#### def playerStandings():
 Returns a list of the players and their win records, sorted by wins.
 
 The first entry in the list should be the player in first place, or a player
@@ -74,14 +75,14 @@ Returns:
     wins: the number of matches the player has won
     matches: the number of matches the player has played
 
-### def reportMatch(winner, loser):
+#### def reportMatch(winner, loser):
 Records the outcome of a single match between two players.
 
   Args:
     winner:  the id number of the player who won
     loser:  the id number of the player who lost
 
-### def swissPairings():
+#### def swissPairings():
 Returns a list of pairs of players for the next round of a match.
 
 Assuming that there are an even number of players registered, each player
