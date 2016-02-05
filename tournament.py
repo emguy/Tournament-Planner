@@ -68,11 +68,6 @@ def playerStandings():
   cur.execute("""SELECT players.id, players.name, wins, matches 
               FROM player_status LEFT JOIN players 
               ON players.id = player_status.player_id ORDER BY rank""")
-  if cur.rowcount == 0: 
-    # Here we consider the case when no match has been played among players
-    cur.execute("""SELECT players.id, players.name, COALESCE(wins, 0),  
-                COALESCE(matches, 0) FROM players LEFT JOIN player_status 
-                ON players.id = player_status.player_id""")
   rows = cur.fetchall()
   conn.close()
   return rows
@@ -86,14 +81,8 @@ def reportMatch(winner, loser):
   """
   conn = connect()
   cur = conn.cursor()
-  cur.execute("""UPDATE matches SET outcome = 1 WHERE player_1 = (%s) 
-              AND player_2 = (%s)""", (winner, loser))
-  if (cur.rowcount == 0):
-    cur.execute("""UPDATE matches SET outcome = 2 WHERE player_1 = (%s) 
-                AND player_2 = (%s)""", (loser, winner))
-    if (cur.rowcount == 0):
-      cur.execute("""INSERT INTO matches (player_1, player_2, outcome) 
-                  VALUES ((%s), (%s), 1)""", (winner, loser))
+  cur.execute("""INSERT INTO matches (player_1, player_2, outcome) 
+               VALUES ((%s), (%s), 1)""", (winner, loser))
   conn.commit()
   conn.close()
 
@@ -112,3 +101,13 @@ def swissPairings():
       id2: the second player's unique id
       name2: the second player's name
   """
+  conn = connect()
+  cur = conn.cursor()
+  cur.execute("""SELECT player_pairing.player_1 AS id1, first.name, 
+              player_pairing.player_2 AS id2, second.name FROM 
+              (player_pairing JOIN players AS first ON player_1 = first.id)
+              JOIN players AS second ON player_2 = second.id;
+              """)
+  rows = cur.fetchall()
+  conn.close()
+  return rows

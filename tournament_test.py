@@ -52,7 +52,6 @@ def testStandingsBeforeMatches():
     registerPlayer("Melpomene Murray")
     registerPlayer("Randy Schwartz")
     standings = playerStandings()
-    print(standings)
     if len(standings) < 2:
         raise ValueError("Players should appear in playerStandings even before "
                          "they have played any matches.")
@@ -151,6 +150,6 @@ if __name__ == '__main__':
     testCount()
     testStandingsBeforeMatches()
     testReportMatches()
-    #testPairings()
+    testPairings()
     print "Success!  All tests pass!"
 
