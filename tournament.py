@@ -50,21 +50,6 @@ def registerPlayer(name):
   conn.commit()
   conn.close()
 
-def getCurrentRound():
-  """Get current round number
-  
-  Return 0 if no matches has been played.
-  """
-  conn = connect()
-  cur = conn.cursor()
-  cur.execute("SELECT MAX(round) FROM matches")
-  rows = cur.fetchall()
-  conn.close()
-  roundNumber = rows[0][0]
-  if roundNumber == None:
-    roundNumber = 0
-  return roundNumber
-
 def playerStandings():
   """Returns a list of the players and their win records, sorted by wins.
 
@@ -78,13 +63,16 @@ def playerStandings():
       wins: the number of matches the player has won
       matches: the number of matches the player has played
   """
-  roundNumber = getCurrentRound()
   conn = connect()
   cur = conn.cursor()
-  if roundNumber == 0:
-    cur.execute("SELECT id, name, wins, matches FROM players ORDER BY wins DESC, omw DESC")
-  else:
-    cur.execute("SELECT id, name, wins, matches FROM players ORDER BY wins DESC, omw DESC")
+  cur.execute("""SELECT players.id, players.name, wins, matches 
+              FROM player_status LEFT JOIN players 
+              ON players.id = player_status.player_id ORDER BY rank""")
+  if cur.rowcount == 0: 
+    # Here we consider the case when no match has been played among players
+    cur.execute("""SELECT players.id, players.name, COALESCE(wins, 0),  
+                COALESCE(matches, 0) FROM players LEFT JOIN player_status 
+                ON players.id = player_status.player_id""")
   rows = cur.fetchall()
   conn.close()
   return rows
@@ -98,8 +86,14 @@ def reportMatch(winner, loser):
   """
   conn = connect()
   cur = conn.cursor()
-  cur.execute("UPDATE players SET wins = wins + 1, matches = matches + 1 WHERE id = (%s)", (winner,))
-  cur.execute("UPDATE players SET loses = loses + 1, matches = matches + 1 WHERE id = (%s)", (loser,))
+  cur.execute("""UPDATE matches SET outcome = 1 WHERE player_1 = (%s) 
+              AND player_2 = (%s)""", (winner, loser))
+  if (cur.rowcount == 0):
+    cur.execute("""UPDATE matches SET outcome = 2 WHERE player_1 = (%s) 
+                AND player_2 = (%s)""", (loser, winner))
+    if (cur.rowcount == 0):
+      cur.execute("""INSERT INTO matches (player_1, player_2, outcome) 
+                  VALUES ((%s), (%s), 1)""", (winner, loser))
   conn.commit()
   conn.close()
 
@@ -118,70 +112,3 @@ def swissPairings():
       id2: the second player's unique id
       name2: the second player's name
   """
-  conn = connect()
-  cur = conn.cursor()
-  cur.execute("SELECT MAX(round) FROM matches")
-  rows = cur.fetchall()
-  roundNumber = rows[0][0]
-  if roundNumber == None:
-    roundNumber = 1
-  numberofPlayers = countPlayers()
-  number_of_
-  print(round_number)
-  conn.close()
-  
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-def registerMatch(id1, id2, status, roundNumber):
-  conn = connect()
-  cur = conn.cursor()
-  cur.execute("INSERT INTO matches (player1, player2, status, round) VALUES (%s, %s, %s, %s)", (id1, id2, status, roundNumber))
-  conn.commit()
-  conn.close()
-
-def registerPlayer2(name, wins, omw):
-  """Adds a player to the tournament database.
-
-  The database assigns a unique serial id number for the player.  (This
-  should be handled by your SQL database schema, not in your Python code.)
-
-  Args:
-    name: the player's full name (need not be unique).
-  """
-  conn = connect()
-  cur = conn.cursor()
-  cur.execute("INSERT INTO players (name, wins, omw) VALUES (%s, %s, %s)", (name, wins, omw))
-  conn.commit()
-  conn.close()
-
-def printMatches():
-  """Print out the list of all matches (for testing)"""
-  conn = connect()
-  cur = conn.cursor()
-  cur.execute("SELECT * FROM Matches")
-  rows = cur.fetchall()
-  print(rows)
-  conn.close()
-
-def printPlayers():
-  """Print out the list of registered players (for testing)"""
-  conn = connect()
-  cur = conn.cursor()
-  cur.execute("SELECT * FROM players")
-  rows = cur.fetchall()
-  print(rows)
-  conn.close()
-
