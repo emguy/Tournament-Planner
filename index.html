@@ -1,0 +1,192 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>Tournament-planner by emguy</title>
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <link rel="stylesheet" href="stylesheets/github-dark.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+    <script src="javascripts/respond.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <!--[if lt IE 8]>
+    <link rel="stylesheet" href="stylesheets/ie.css">
+    <![endif]-->
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+
+  </head>
+  <body>
+      <div id="header">
+        <nav>
+          <li class="fork"><a href="https://github.com/emguy/Tournament-Planner">View On GitHub</a></li>
+          <li class="downloads"><a href="https://github.com/emguy/Tournament-Planner/zipball/master">ZIP</a></li>
+          <li class="downloads"><a href="https://github.com/emguy/Tournament-Planner/tarball/master">TAR</a></li>
+          <li class="title">DOWNLOADS</li>
+        </nav>
+      </div><!-- end header -->
+
+    <div class="wrapper">
+
+      <section>
+        <div id="title">
+          <h1>Tournament-planner</h1>
+          <p>This program keeps track of players and matches in a game tournament (Swiss system) through the PostgreSQL database.</p>
+          <hr>
+          <span class="credits left">Project maintained by <a href="https://github.com/emguy">emguy</a></span>
+          <span class="credits right">Hosted on GitHub Pages &mdash; Theme by <a href="https://twitter.com/michigangraham">mattgraham</a></span>
+        </div>
+
+        <h1>
+<a id="tournament-planner" class="anchor" href="#tournament-planner" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Tournament Planner</h1>
+
+<p>This program keeps track of players and matches in a game tournament (Swiss
+system) through the use of a PostgreSQL database.</p>
+
+<h2>
+<a id="summary" class="anchor" href="#summary" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Summary</h2>
+
+<p>This program includes the following:</p>
+
+<ol>
+<li>A database schema for storing data required to generate paired matches in a tournament using the Swiss System.</li>
+<li>A python module for connecting to database, register/delete/count players, report/delete matches, rank players and create a new Swiss parings.</li>
+<li>A testing code is also provided for debuging the program and for testing the database.</li>
+</ol>
+
+<h2>
+<a id="features" class="anchor" href="#features" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Features</h2>
+
+<ol>
+<li>The program supports draw games.</li>
+<li>The program utilizes Opponents Match Win (OMW) scheme to determine the standing and the pairing.</li>
+</ol>
+
+<h2>
+<a id="requirements" class="anchor" href="#requirements" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Requirements</h2>
+
+<ol>
+<li>Python 2.7</li>
+<li>PostgreSQL</li>
+</ol>
+
+<h2>
+<a id="database-setup" class="anchor" href="#database-setup" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Database setup</h2>
+
+<ol>
+<li>
+<p>Enter the PostgreSQL interactive terminal by typing the following on a Linux shell</p>
+
+<pre><code>$ psql
+</code></pre>
+</li>
+<li>
+<p>Create a database with name 'tournament' by excuting the following command within the PostgreSQL terminal</p>
+
+<pre><code>=&gt; CREATE DATABASE tournament;
+</code></pre>
+</li>
+<li>
+<p>Connect to the database 'tournament', by excuting </p>
+
+<pre><code>=&gt; \connect tournament
+</code></pre>
+</li>
+<li>
+<p>Excute the sql queries from the file 'tournament.sql' by excuting</p>
+
+<pre><code>=&gt; \i tournament.sql
+</code></pre>
+</li>
+<li>
+<p>To test the APIs of this program, excuting the following on a Linux shell</p>
+
+<pre><code>$ python tournament.py
+</code></pre>
+</li>
+</ol>
+
+<h2>
+<a id="api-usages" class="anchor" href="#api-usages" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>API Usages</h2>
+
+<h4>
+<a id="def-connect" class="anchor" href="#def-connect" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>def connect():</h4>
+
+<p>Connect to the PostgreSQL database.  Returns a database connection.</p>
+
+<h4>
+<a id="deletematches" class="anchor" href="#deletematches" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>deleteMatches():</h4>
+
+<p>Remove all the match records from the database.</p>
+
+<h4>
+<a id="def-deleteplayers" class="anchor" href="#def-deleteplayers" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>def deletePlayers():</h4>
+
+<p>Remove all the player records from the database.</p>
+
+<h4>
+<a id="def-countplayers" class="anchor" href="#def-countplayers" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>def countPlayers():</h4>
+
+<p>Returns the number of players currently registered.</p>
+
+<h4>
+<a id="def-registerplayername" class="anchor" href="#def-registerplayername" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>def registerPlayer(name):</h4>
+
+<p>Adds a player to the tournament database.</p>
+
+<p>The database assigns a unique serial id number for the player.  (This
+should be handled by your SQL database schema, not in your Python code.)</p>
+
+<p>Args:
+  name: the player's full name (need not be unique).</p>
+
+<h4>
+<a id="def-playerstandings" class="anchor" href="#def-playerstandings" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>def playerStandings():</h4>
+
+<p>Returns a list of the players and their win records, sorted by wins.</p>
+
+<p>The first entry in the list should be the player in first place, or a player
+tied for first place if there is currently a tie.</p>
+
+<p>Returns:
+  A list of tuples, each of which contains (id, name, wins, matches):
+    id: the player's unique id (assigned by the database)
+    name: the player's full name (as registered)
+    wins: the number of matches the player has won
+    matches: the number of matches the player has played</p>
+
+<h4>
+<a id="def-reportmatchwinner-loser" class="anchor" href="#def-reportmatchwinner-loser" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>def reportMatch(winner, loser):</h4>
+
+<p>Records the outcome of a single match between two players.</p>
+
+<p>Args:
+    winner:  the id number of the player who won
+    loser:  the id number of the player who lost</p>
+
+<h4>
+<a id="def-swisspairings" class="anchor" href="#def-swisspairings" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>def swissPairings():</h4>
+
+<p>Returns a list of pairs of players for the next round of a match.</p>
+
+<p>Assuming that there are an even number of players registered, each player
+appears exactly once in the pairings.  Each player is paired with another
+player with an equal or nearly-equal win record, that is, a player adjacent
+to him or her in the standings.</p>
+
+<p>Returns:
+  A list of tuples, each of which contains (id1, name1, id2, name2)
+    id1: the first player's unique id
+    name1: the first player's name
+    id2: the second player's unique id
+    name2: the second player's name</p>
+
+<p>Bugs report to Yu Zhang (<a href="mailto:emguy2000@gmail.com">emguy2000@gmail.com</a>).</p>
+      </section>
+
+    </div>
+    <!--[if !IE]><script>fixScale(document);</script><![endif]-->
+    
+  </body>
+</html>
